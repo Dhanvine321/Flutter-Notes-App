@@ -10,7 +10,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: "Dhanvine's Notes App",
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.orange,
       ),
       home: LoginPage(), // Show LoginPage at first
     );
@@ -102,25 +102,62 @@ class NotesHomePage extends StatefulWidget {
 }
 
 class _NotesHomePageState extends State<NotesHomePage> {
-  List<String> notesList = [];
+  List<Note> notesList = [];
 
   void _addNote() {
-    String newNote = '';
+    String newTitle = '';
+    String newDescription = '';
+    DateTime newDueDate = DateTime.now();
+
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
           title: Text('Add Note'),
-          content: TextField(
-            onChanged: (value) {
-              newNote = value;
-            },
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                onChanged: (value) {
+                  newTitle = value;
+                },
+                decoration: InputDecoration(labelText: 'Title'),
+              ),
+              TextField(
+                onChanged: (value) {
+                  newDescription = value;
+                },
+                decoration: InputDecoration(labelText: 'Description'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  // Show a date picker to select the due date
+                  showDatePicker(
+                    context: context,
+                    initialDate: DateTime.now(),
+                    firstDate: DateTime.now(),
+                    lastDate: DateTime.now().add(Duration(days: 365)), // Allow up to one year in the future
+                  ).then((selectedDate) {
+                    if (selectedDate != null) {
+                      setState(() {
+                        newDueDate = selectedDate;
+                      });
+                    }
+                  });
+                },
+                child: Text('Select Due Date pwease'),
+              ),
+            ],
           ),
           actions: <Widget>[
             ElevatedButton(
               onPressed: () {
                 setState(() {
-                  notesList.add(newNote);
+                  notesList.add(Note(
+                    title: newTitle,
+                    description: newDescription,
+                    dueDate: newDueDate,
+                  ));
                 });
                 Navigator.of(context).pop();
               },
@@ -133,17 +170,48 @@ class _NotesHomePageState extends State<NotesHomePage> {
   }
 
   void _editNote(int index) {
-    String editedNote = notesList[index];
+    Note editedNote = notesList[index];
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
           title: Text('Edit Note'),
-          content: TextField(
-            onChanged: (value) {
-              editedNote = value;
-            },
-            controller: TextEditingController(text: editedNote),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                onChanged: (value) {
+                  editedNote.title = value;
+                },
+                controller: TextEditingController(text: editedNote.title),
+                decoration: InputDecoration(labelText: 'Title'),
+              ),
+              TextField(
+                onChanged: (value) {
+                  editedNote.description = value;
+                },
+                controller: TextEditingController(text: editedNote.description),
+                decoration: InputDecoration(labelText: 'Description'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  // Show a date picker to select the due date
+                  showDatePicker(
+                    context: context,
+                    initialDate: editedNote.dueDate,
+                    firstDate: DateTime.now(),
+                    lastDate: DateTime.now().add(Duration(days: 365)), // Allow up to one year in the future
+                  ).then((selectedDate) {
+                    if (selectedDate != null) {
+                      setState(() {
+                        editedNote.dueDate = selectedDate;
+                      });
+                    }
+                  });
+                },
+                child: Text('Select Due Date'),
+              ),
+            ],
           ),
           actions: <Widget>[
             ElevatedButton(
@@ -171,7 +239,7 @@ class _NotesHomePageState extends State<NotesHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Notes App'),
+        title: Text('Dhanvine\'s Notes App'),
       ),
       drawer: Drawer(
         child: ListView(
@@ -179,7 +247,7 @@ class _NotesHomePageState extends State<NotesHomePage> {
           children: <Widget>[
             Container(
               height: 100, // Adjust the height as per preference
-              color: Colors.blue,
+              color: Colors.deepOrange,
               alignment: Alignment.centerLeft,
               padding: EdgeInsets.symmetric(horizontal: 16.0),
               child: Text(
@@ -230,14 +298,26 @@ class _NotesHomePageState extends State<NotesHomePage> {
       floatingActionButton: FloatingActionButton(
         onPressed: _addNote,
         child: Icon(Icons.add),
-        backgroundColor: Colors.blue,
+        backgroundColor: Colors.deepOrange,
       ),
     );
   }
 }
 
+class Note {
+  String title;
+  String description;
+  DateTime dueDate;
+
+  Note({
+    required this.title,
+    required this.description,
+    required this.dueDate,
+  });
+}
+
 class NoteCard extends StatefulWidget {
-  final String note;
+  final Note note;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
 
@@ -263,7 +343,9 @@ class _NoteCardState extends State<NoteCard> {
           Card(
             elevation: 4.0,
             child: ListTile(
-              title: Text(widget.note),
+              title: Text(widget.note.title),
+              subtitle: Text(widget.note.description),
+              trailing: Text("Due: ${widget.note.dueDate.toLocal().toString().split(' ')[0]}"),
             ),
           ),
           Positioned(
@@ -311,6 +393,7 @@ class ProfilePage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Text("________picture here later________"),
             Text('Username: ${username}'),
             SizedBox(height: 16.0),
             Text('Password: ${password}'),
