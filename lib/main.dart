@@ -8,11 +8,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Notes App',
+      title: "Dhanvine's Notes App",
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: LoginPage(), // Show LoginPage initially
+      home: LoginPage(), // Show LoginPage at first
     );
   }
 }
@@ -24,7 +24,7 @@ class LoginPage extends StatelessWidget {
     TextEditingController passwordController = TextEditingController();
 
     void _login() {
-      // Validate username and password here (You can add your authentication logic)
+      // Validate username and password here (add authentication logic later)
       String username = usernameController.text;
       String password = passwordController.text;
       if (username.isNotEmpty && password.isNotEmpty) {
@@ -178,7 +178,7 @@ class _NotesHomePageState extends State<NotesHomePage> {
           padding: EdgeInsets.zero,
           children: <Widget>[
             Container(
-              height: 100, // Adjust the height as per your preference
+              height: 100, // Adjust the height as per preference
               color: Colors.blue,
               alignment: Alignment.centerLeft,
               padding: EdgeInsets.symmetric(horizontal: 16.0),
@@ -314,7 +314,7 @@ class ProfilePage extends StatelessWidget {
             Text('Username: ${username}'),
             SizedBox(height: 16.0),
             Text('Password: ${password}'),
-            // Add more account details here
+            // Add more account details here later
           ],
         ),
       ),

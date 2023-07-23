@@ -8,7 +8,7 @@ class LoginPage extends StatelessWidget {
     TextEditingController passwordController = TextEditingController();
 
     void _login() {
-      // Validate username and password here (You can add your authentication logic)
+      // Validate username and password here (can add authentication logic later)
       String username = usernameController.text;
       String password = passwordController.text;
       if (username.isNotEmpty && password.isNotEmpty) {
