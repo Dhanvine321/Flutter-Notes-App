@@ -12,12 +12,91 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: NotesHomePage(),
+      home: LoginPage(), // Show LoginPage initially
+    );
+  }
+}
+
+class LoginPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    TextEditingController usernameController = TextEditingController();
+    TextEditingController passwordController = TextEditingController();
+
+    void _login() {
+      // Validate username and password here (You can add your authentication logic)
+      String username = usernameController.text;
+      String password = passwordController.text;
+      if (username.isNotEmpty && password.isNotEmpty) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => NotesHomePage(username, password)),
+        );
+      } else {
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: Text('Error'),
+              content: Text('Invalid username or password.'),
+              actions: <Widget>[
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      }
+    }
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Login'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: TextField(
+                controller: usernameController,
+                decoration: InputDecoration(
+                  labelText: 'Username',
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: TextField(
+                controller: passwordController,
+                obscureText: true,
+                decoration: InputDecoration(
+                  labelText: 'Password',
+                ),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: _login,
+              child: Text('Login'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
 
 class NotesHomePage extends StatefulWidget {
+  final String username;
+  final String password;
+
+  NotesHomePage(this.username, this.password);
+
   @override
   _NotesHomePageState createState() => _NotesHomePageState();
 }
@@ -93,6 +172,44 @@ class _NotesHomePageState extends State<NotesHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Notes App'),
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            Container(
+              height: 100, // Adjust the height as per your preference
+              color: Colors.blue,
+              alignment: Alignment.centerLeft,
+              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              child: Text(
+                'Menu',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24.0,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            ListTile(
+              title: Text('Home'),
+              onTap: () {
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: Text('Profile'),
+              onTap: () {
+                // Close the drawer and navigate to the profile page
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ProfilePage(widget.username, widget.password)),
+                );
+              },
+            ),
+          ],
+        ),
       ),
       body: Column(
         children: <Widget>[
@@ -173,6 +290,33 @@ class _NoteCardState extends State<NoteCard> {
           ),
         ],
         alignment: Alignment.centerRight,
+      ),
+    );
+  }
+}
+
+class ProfilePage extends StatelessWidget {
+  final String username;
+  final String password;
+
+  ProfilePage(this.username, this.password);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Profile'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('Username: ${username}'),
+            SizedBox(height: 16.0),
+            Text('Password: ${password}'),
+            // Add more account details here
+          ],
+        ),
       ),
     );
   }
